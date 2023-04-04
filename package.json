@@ -1,17 +1,33 @@
 {
-  "name": "record-api",
-  "version": "0.0.0",
-  "private": true,
+  "name": "plant-api",
+  "version": "1.0.0",
+  "description": "plants",
+  "main": "index.ts",
   "scripts": {
-    "start": "node ./bin/www"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node-dev ./index.ts"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ClaireAll/plant-api.git"
+  },
+  "author": "claire",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ClaireAll/plant-api/issues"
+  },
+  "homepage": "https://github.com/ClaireAll/plant-api#readme",
   "dependencies": {
-    "cookie-parser": "~1.4.4",
+    "@types/mysql": "^2.15.21",
     "cors": "^2.8.5",
-    "debug": "~2.6.9",
-    "express": "~4.16.1",
-    "http-errors": "~1.6.3",
-    "jade": "~1.11.0",
-    "morgan": "~1.9.1"
+    "express": "^4.18.2",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.15.10",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.2"
   }
 }
