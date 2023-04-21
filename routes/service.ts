@@ -9,9 +9,8 @@ export function formatResult(err: any, res: Response, result: any) {
         });
     }
 
-    console.log(res)
     res.send({
-        status: res.statusCode,
+        status: res?.statusCode,
         message: err?.message,
         data: result,
     });

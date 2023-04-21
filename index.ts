@@ -1,7 +1,6 @@
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
-import { Hello } from "./routes/hello";
-import { PlantFamily } from "./routes/plant_family/plant_family";
+import Claire from "./routes/database";
 
 const app: Application = express();
 const port = 9000;
@@ -17,9 +16,7 @@ app.get("/", async (req: Request, res: Response): Promise<Response> => {
         message: "Hello World!",
     });
 });
-app.use(Hello);
-app.use(PlantFamily);
-
+app.use(Claire);
 try {
     app.listen(port, (): void => {
         console.log(`Connected successfully on port ${port}`);
