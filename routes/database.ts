@@ -4,6 +4,8 @@ import { formatResult } from "./service";
 import { clothes } from "./clothes/clothes";
 import path from "path";
 import multer from "multer";
+import fs from "fs";
+import bodyParser from "body-parser";
 
 const Claire: Application = express();
 const db = mysql.createPool({
@@ -11,6 +13,7 @@ const db = mysql.createPool({
     user: "root",
     password: "123456",
     database: "claire",
+    multipleStatements: true,
 });
 
 // 跨域请求处理
@@ -32,10 +35,11 @@ Claire.all("*", (req, res, next) => {
 });
 
 // 公开静态文件夹，匹配`虚拟路径img` 到 `真实路径public` 注意这里  /img/ 前后必须都要有斜杠！！！
-// Claire.use("/img/", express.static(path.join(__dirname, "/assets/imgs")));
 Claire.use(express.static("D:/mine/claire-api/public"));
-Claire.use(express.urlencoded({ extended: false }));
-Claire.use(express.json());
+Claire.use(bodyParser.json());
+Claire.use(bodyParser.json({ type: "application/*+json" }));
+Claire.use(bodyParser.text());
+Claire.use(bodyParser.urlencoded({ extended: false }));
 
 // 跨域中间件
 const cors = (
@@ -50,7 +54,6 @@ const cors = (
 const storage = multer.diskStorage({
     // 配置文件上传后存储的路径
     destination(_req: any, file: any, cb: Function) {
-        console.log(12334456);
         if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
             // 上传文件存在 public 下
             cb(null, "D:/mine/claire-api/public");
@@ -73,15 +76,34 @@ const storage = multer.diskStorage({
 const multerConfig = multer({ storage });
 
 Claire.post("/upload", cors, multerConfig.single("file"), (req, res) => {
-    console.log(req.file)
     res.send({
         data: {
             name: req.file?.filename,
             url: req.file?.path,
-            hello: 123,
         },
     });
 });
+
+Claire.delete("/delete/:id", (req, res) => {
+    const imgName = req.params.id;
+    formatResult(null, res, deletePic(imgName));
+});
+
+export function deletePic(imgName: string) {
+    const url = path.join(__dirname, "../public");
+    let result: string = "";
+    if (fs.existsSync(url)) {
+        const files = fs.readdirSync(url);
+        if (files.includes(imgName)) {
+            fs.unlinkSync(`${url}/${imgName}`);
+            result = "已删除图片：" + imgName;
+        } else {
+            result = "不存在图片：" + imgName;
+        }
+    }
+
+    return result;
+}
 
 export function claireGet(url: string, query: string) {
     Claire.get(url, (req: Request, res: Response) => {
@@ -91,9 +113,27 @@ export function claireGet(url: string, query: string) {
     });
 }
 
-export function getImg(url: string, name: string) {
-    Claire.get(url, (_req, res) => {
-        res.sendFile(path.join(__dirname, `/assets/imgs/${name}`));
+export function claireDelete(url: string, query: Function, other: Function) {
+    Claire.delete(url, (req: Request, res: Response) => {
+        db.query(query(JSON.parse(req.body)), (err, result) => {
+            other(JSON.parse(req.body));
+            formatResult(err, res, result);
+        });
+    });
+}
+
+export function clairePost(
+    url: string,
+    query: Function,
+    formatData: Function,
+    formatRes: Function
+) {
+    Claire.post(url, (req: Request, res: Response) => {
+        db.query(query(req.body), formatData(req.body), (err, result) => {
+            formatResult(err, res, formatRes(result));
+        });
+
+        return;
     });
 }
 
