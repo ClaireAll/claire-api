@@ -2,11 +2,11 @@ import { claireDelete, clairePost, deletePic } from "../database";
 import { SortType } from "../enum";
 import { generateRandomString } from "../service";
 
-const root = "/clothes";
+const root = "/pants";
 
-export function clothes() {
+export function pants() {
     /**
-     * 分页查询衣服
+     * 分页查询裤子
      */
     clairePost(
         `${root}/list`,
@@ -38,7 +38,7 @@ export function clothes() {
             }
 
             const sqlFunc = (type: string) =>
-                `SELECT ${type} from clothes where price BETWEEN ${
+                `SELECT ${type} from pants where price BETWEEN ${
                     price?.min || 0
                 } AND ${
                     price?.max || 999999999
@@ -62,11 +62,11 @@ export function clothes() {
     );
 
     /**
-     * 新添一件衣服
+     * 新添一条裤子
      */
     clairePost(
         `${root}/add`,
-        () => "insert into clothes set ?",
+        () => "insert into pants set ?",
         (query: any) => {
             const { pic, price, quarter } = JSON.parse(query);
 
@@ -82,11 +82,11 @@ export function clothes() {
     );
 
     /**
-     * 编辑一件衣服
+     * 编辑一条裤子
      */
     clairePost(
         `${root}/edit`,
-        (query: any) => `update clothes set price=?, pic=?, quarter=? where id="${JSON.parse(query).id}"`,
+        (query: any) => `update pants set price=?, pic=?, quarter=? where id="${JSON.parse(query).id}"`,
         (query: any) => {
             const { pic, price, quarter } = JSON.parse(query);
 
@@ -96,13 +96,13 @@ export function clothes() {
     );
 
     /**
-     * 删除一件/多件衣服
+     * 删除一条/多条裤子
      */
     claireDelete(
         `${root}/delete`,
         (info: any) =>
             info
-                ? `DELETE FROM clothes WHERE id IN (${info
+                ? `DELETE FROM pants WHERE id IN (${info
                       .map((item: any) => `"${item.id}"`)
                       .join(",")});`
                 : "",
