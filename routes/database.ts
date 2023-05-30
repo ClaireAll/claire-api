@@ -7,6 +7,7 @@ import multer from "multer";
 import fs from "fs";
 import bodyParser from "body-parser";
 import { pants } from "./pants/pants";
+import { books } from "./books/books";
 
 const Claire: Application = express();
 const db = mysql.createPool({
@@ -140,5 +141,6 @@ export function clairePost(
 
 clothes();
 pants();
+books();
 
 export default Claire;
